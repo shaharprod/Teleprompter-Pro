@@ -14,8 +14,10 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   onVideoReady
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const canvasStreamRef = useRef<MediaStream | null>(null)
   const [isCameraReady, setIsCameraReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,25 +25,31 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   useEffect(() => {
     const initCamera = async () => {
       try {
-        // Request front camera for selfie and vertical format for social media
+        // Request front camera - we'll crop it to vertical format
         const constraints = {
           video: {
             facingMode: { ideal: 'user' }, // Front camera for selfie
-            width: { ideal: 720, min: 480, max: 1080 },
-            height: { ideal: 1280, min: 640, max: 1920 }, // Vertical format 9:16 for social media
-            aspectRatio: { ideal: 9/16 } // Force vertical aspect ratio
+            width: { ideal: 1280 },
+            height: { ideal: 720 } // Get landscape format first
           },
           audio: true
         }
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         streamRef.current = stream
-
+        
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
           setIsCameraReady(true)
           setError(null)
+          
+          // Setup canvas for vertical recording
+          if (canvasRef.current) {
+            const canvas = canvasRef.current
+            canvas.width = 720  // Vertical width
+            canvas.height = 1280 // Vertical height
+          }
         }
       } catch (err) {
         console.error('Camera access error:', err)
@@ -60,13 +68,57 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   }, [])
 
   const startRecording = async () => {
-    if (!streamRef.current || !videoRef.current) return
+    if (!streamRef.current || !videoRef.current || !canvasRef.current) return
 
     try {
-      // Force vertical recording format
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
+      const canvas = canvasRef.current
+      const video = videoRef.current
+      
+      // Create canvas stream for vertical recording
+      const canvasStream = canvas.captureStream(30) // 30 FPS
+      canvasStreamRef.current = canvasStream
+      
+      // Combine canvas video with original audio
+      const audioTracks = streamRef.current.getAudioTracks()
+      audioTracks.forEach(track => {
+        canvasStream.addTrack(track)
+      })
+      
+      // Start drawing to canvas
+      const drawToCanvas = () => {
+        if (isRecording && canvas && video) {
+          const ctx = canvas.getContext('2d')
+          if (ctx) {
+            // Clear canvas
+            ctx.fillStyle = '#000000'
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            
+            // Draw video centered and cropped to vertical format
+            const videoWidth = video.videoWidth
+            const videoHeight = video.videoHeight
+            
+            // Calculate crop area (center crop)
+            const cropSize = Math.min(videoWidth, videoHeight * (9/16))
+            const cropX = (videoWidth - cropSize) / 2
+            const cropY = (videoHeight - cropSize * (16/9)) / 2
+            
+            ctx.drawImage(
+              video,
+              cropX, cropY, cropSize, cropSize * (16/9), // Source crop
+              0, 0, canvas.width, canvas.height // Destination
+            )
+          }
+          requestAnimationFrame(drawToCanvas)
+        }
+      }
+      
+      // Start drawing
+      drawToCanvas()
+      
+      // Record canvas stream
+      const mediaRecorder = new MediaRecorder(canvasStream, {
         mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 2500000 // Higher quality for vertical video
+        videoBitsPerSecond: 2500000
       })
       
       mediaRecorderRef.current = mediaRecorder
@@ -83,7 +135,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         onVideoReady(videoBlob)
       }
 
-      mediaRecorder.start(100) // Record in 100ms chunks for better quality
+      mediaRecorder.start(100)
       onStartRecording()
     } catch (err) {
       console.error('Recording start error:', err)
@@ -116,6 +168,14 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
           playsInline
           muted
           style={{ transform: 'scaleX(-1)' }} // Mirror effect for selfie
+        />
+        
+        {/* Hidden canvas for recording */}
+        <canvas
+          ref={canvasRef}
+          className="hidden"
+          width={720}
+          height={1280}
         />
 
         {/* Recording indicator */}
@@ -178,8 +238,8 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       {/* Instructions */}
       <div className="text-center text-sm text-gray-400">
         <p>🤳 מצלמה קדמית לסלפי</p>
-        <p>📱 פורמט אנכי 9:16 לרשתות חברתיות</p>
-        <p>🎬 הקלטה בפורמט אנכי מושלם</p>
+        <p>📱 הקלטה בפורמט אנכי 9:16</p>
+        <p>🎬 Canvas crop לרוחב אנכי מושלם</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
