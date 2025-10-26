@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+import VideoRecorder from './components/VideoRecorder'
+import VideoPreview from './components/VideoPreview'
 
 interface TeleprompterProps {
   text: string
@@ -84,7 +86,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
     const rect = e.currentTarget.getBoundingClientRect()
     const x = touch.clientX - rect.left
     const y = touch.clientY - rect.top
-    
+
     // If touch is in center area, toggle play
     if (x > rect.width * 0.2 && x < rect.width * 0.8 && y > rect.height * 0.2 && y < rect.height * 0.8) {
       onTogglePlay()
@@ -114,10 +116,10 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden"
          onTouchStart={handleTouchStart}
          onTouchEnd={handleTouchEnd}>
-      
+
       {/* Red line */}
       <div className="absolute top-1/2 left-0 right-0 h-1 border-y-2 border-red-500 shadow-red-glow transform -translate-y-1/2 z-10" />
-      
+
       {/* Text area */}
       <div
         ref={scrollRef}
@@ -137,7 +139,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
 
       {/* Controls */}
       <div className={`absolute bottom-0 left-0 right-0 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-t-xl flex flex-col items-center gap-4 z-20 transition-transform duration-300 ${showControls ? 'translate-y-0' : 'translate-y-full'}`}>
-        
+
         {isPlaying && (
           <span className="absolute top-2 left-1/2 -translate-x-1/2 text-red-500 text-sm font-bold animate-pulse">
             🔴 LIVE
@@ -207,6 +209,12 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState(1)
   const [fontSize, setFontSize] = useState(4)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  
+  // Video recording states
+  const [isRecording, setIsRecording] = useState(false)
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false)
+  const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null)
+  const [showVideoPreview, setShowVideoPreview] = useState(false)
 
   const handleTextSubmit = (scriptText: string) => {
     setText(scriptText)
@@ -216,9 +224,9 @@ const App: React.FC = () => {
   }
 
   const togglePlay = () => setIsPlaying(prev => !prev)
-  
+
   const resetScroll = () => setIsPlaying(false)
-  
+
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
@@ -235,6 +243,46 @@ const App: React.FC = () => {
 
   const adjustSpeed = (newSpeed: number) => setSpeed(Math.max(0.1, Math.min(5, newSpeed)))
   const adjustFontSize = (newSize: number) => setFontSize(Math.max(2, Math.min(12, newSize)))
+
+  // Video recording functions
+  const handleStartRecording = () => {
+    setIsRecording(true)
+  }
+
+  const handleStopRecording = () => {
+    setIsRecording(false)
+  }
+
+  const handleVideoReady = (videoBlob: Blob) => {
+    setRecordedVideo(videoBlob)
+    setShowVideoRecorder(false)
+    setShowVideoPreview(true)
+  }
+
+  const handleSaveVideo = () => {
+    setShowVideoPreview(false)
+    setRecordedVideo(null)
+  }
+
+  const handleCancelVideo = () => {
+    setShowVideoPreview(false)
+    setRecordedVideo(null)
+  }
+
+  const handleRecordAgain = () => {
+    setShowVideoPreview(false)
+    setRecordedVideo(null)
+    setShowVideoRecorder(true)
+  }
+
+  const toggleVideoRecorder = () => {
+    if (showVideoRecorder) {
+      setShowVideoRecorder(false)
+    } else {
+      setShowVideoRecorder(true)
+      setIsPlaying(false) // Stop teleprompter when recording
+    }
+  }
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -255,16 +303,32 @@ const App: React.FC = () => {
 
       {/* Main content */}
       <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden">
-        <Teleprompter
-          text={text}
-          isPlaying={isPlaying}
-          speed={speed}
-          fontSize={fontSize}
-          onTogglePlay={togglePlay}
-          onSpeedChange={adjustSpeed}
-          onFontSizeChange={adjustFontSize}
-          onReset={resetScroll}
-        />
+        {showVideoPreview && recordedVideo ? (
+          <VideoPreview
+            videoBlob={recordedVideo}
+            onSave={handleSaveVideo}
+            onCancel={handleCancelVideo}
+            onRecordAgain={handleRecordAgain}
+          />
+        ) : showVideoRecorder ? (
+          <VideoRecorder
+            isRecording={isRecording}
+            onStartRecording={handleStartRecording}
+            onStopRecording={handleStopRecording}
+            onVideoReady={handleVideoReady}
+          />
+        ) : (
+          <Teleprompter
+            text={text}
+            isPlaying={isPlaying}
+            speed={speed}
+            fontSize={fontSize}
+            onTogglePlay={togglePlay}
+            onSpeedChange={adjustSpeed}
+            onFontSizeChange={adjustFontSize}
+            onReset={resetScroll}
+          />
+        )}
       </main>
 
       {/* Footer controls */}
@@ -342,6 +406,18 @@ const App: React.FC = () => {
             >
               <span>{isFullscreen ? '📱' : '🖥️'}</span>
               <span className="hidden sm:inline">{isFullscreen ? 'צא ממסך מלא' : 'מסך מלא'}</span>
+            </button>
+
+            <button
+              onClick={toggleVideoRecorder}
+              className={`px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 min-h-[44px] shadow-lg ${
+                showVideoRecorder
+                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              }`}
+            >
+              <span>{showVideoRecorder ? '📹' : '🎥'}</span>
+              <span className="hidden sm:inline">{showVideoRecorder ? 'סגור מצלמה' : 'צילום וידאו'}</span>
             </button>
           </div>
         </div>
