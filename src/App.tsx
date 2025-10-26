@@ -217,7 +217,8 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState(1)
   const [fontSize, setFontSize] = useState(4)
   const [isFullscreen, setIsFullscreen] = useState(false)
-
+  const [isMobile, setIsMobile] = useState(false)
+  
   // Video recording states
   const [isRecording, setIsRecording] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
@@ -321,6 +322,16 @@ const App: React.FC = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
 
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white font-sans overflow-hidden">
       {/* Header */}
@@ -340,8 +351,55 @@ const App: React.FC = () => {
         )}
       </header>
 
-      {/* Main content */}
-      <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden">
+          {/* Main content */}
+          <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden relative">
+            {/* Desktop Speed Control - Left side */}
+            {!isMobile && (
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-xl">
+                <div className="flex flex-col items-center gap-4">
+                  <label className="text-sm font-medium text-gray-200">
+                    מהירות:
+                  </label>
+                  <input
+                    type="range"
+                    min="0.05"
+                    max="50"
+                    step="0.1"
+                    value={speed}
+                    onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
+                    className="cursor-pointer w-32 accent-green-500 transform -rotate-90"
+                    aria-label="שנה מהירות גלילה"
+                  />
+                  <span className="text-white font-bold text-sm bg-gray-700 px-2 py-1 rounded">
+                    {speed.toFixed(1)}x
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Desktop Font Size Control - Right side */}
+            {!isMobile && (
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-xl">
+                <div className="flex flex-col items-center gap-4">
+                  <label className="text-sm font-medium text-gray-200">
+                    גופן:
+                  </label>
+                  <input
+                    type="range"
+                    min="2"
+                    max="12"
+                    step="0.5"
+                    value={fontSize}
+                    onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
+                    className="cursor-pointer w-32 accent-blue-500 transform -rotate-90"
+                    aria-label="שנה גודל גופן"
+                  />
+                  <span className="text-white font-bold text-sm bg-gray-700 px-2 py-1 rounded">
+                    {fontSize}rem
+                  </span>
+                </div>
+              </div>
+            )}
         {showVideoPreview && recordedVideo ? (
           <VideoPreview
             videoBlob={recordedVideo}
@@ -477,6 +535,50 @@ const App: React.FC = () => {
               <span>{showVideoRecorder ? '📹' : '🤳'}</span>
               <span className="hidden sm:inline">{showVideoRecorder ? 'סגור סלפי' : 'סלפי וידאו'}</span>
             </button>
+
+            {/* Mobile Speed Control - only show on mobile */}
+            {isMobile && (
+              <div className="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-lg">
+                <label className="text-sm font-medium text-gray-200 min-w-16">
+                  מהירות:
+                </label>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="50"
+                  step="0.1"
+                  value={speed}
+                  onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
+                  className="cursor-pointer w-28 accent-green-500"
+                  aria-label="שנה מהירות גלילה"
+                />
+                <span className="text-white font-bold min-w-10 text-center text-sm bg-gray-600 px-2 py-1 rounded">
+                  {speed.toFixed(1)}x
+                </span>
+              </div>
+            )}
+
+            {/* Mobile Font Size Control - only show on mobile */}
+            {isMobile && (
+              <div className="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-lg">
+                <label className="text-sm font-medium text-gray-200 min-w-16">
+                  גופן:
+                </label>
+                <input
+                  type="range"
+                  min="2"
+                  max="12"
+                  step="0.5"
+                  value={fontSize}
+                  onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
+                  className="cursor-pointer w-28 accent-blue-500"
+                  aria-label="שנה גודל גופן"
+                />
+                <span className="text-white font-bold min-w-10 text-center text-sm bg-gray-600 px-2 py-1 rounded">
+                  {fontSize}rem
+                </span>
+              </div>
+            )}
 
             {/* Screen Split Control - only show when video recorder is active */}
             {showVideoRecorder && (
