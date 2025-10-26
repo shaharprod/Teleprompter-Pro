@@ -35,7 +35,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         streamRef.current = stream
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
@@ -65,7 +65,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType: 'video/webm;codecs=vp9'
       })
-      
+
       mediaRecorderRef.current = mediaRecorder
       const chunks: BlobPart[] = []
 
@@ -104,16 +104,16 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 h-full w-full">
       {/* Camera Preview */}
-      <div className="relative w-full max-w-md bg-black rounded-lg overflow-hidden">
+      <div className="relative w-full h-full max-h-96 bg-black rounded-lg overflow-hidden">
         <video
           ref={videoRef}
-          className="w-full h-auto"
+          className="w-full h-full object-cover"
           playsInline
           muted
         />
-        
+
         {/* Recording indicator */}
         {isRecording && (
           <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full">
@@ -172,9 +172,10 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       </button>
 
       {/* Instructions */}
-      <div className="text-center text-sm text-gray-400 max-w-md">
+      <div className="text-center text-sm text-gray-400">
         <p>📱 לחץ על הכפתור להתחלת הקלטת וידאו</p>
         <p>🎬 הקלטה עם מצלמה אחורית באיכות גבוהה</p>
+        <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
   )

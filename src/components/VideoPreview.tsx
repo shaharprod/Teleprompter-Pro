@@ -20,7 +20,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
     if (videoRef.current && videoBlob) {
       const videoUrl = URL.createObjectURL(videoBlob)
       videoRef.current.src = videoUrl
-      
+
       // Clean up URL when component unmounts
       return () => {
         URL.revokeObjectURL(videoUrl)
@@ -49,7 +49,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
           controls
           playsInline
         />
-        
+
         {/* Video info */}
         <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">
           📹 סרטון מוכן

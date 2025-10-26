@@ -209,7 +209,7 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState(1)
   const [fontSize, setFontSize] = useState(4)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  
+
   // Video recording states
   const [isRecording, setIsRecording] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
@@ -280,7 +280,7 @@ const App: React.FC = () => {
       setShowVideoRecorder(false)
     } else {
       setShowVideoRecorder(true)
-      setIsPlaying(false) // Stop teleprompter when recording
+      // Don't stop teleprompter when recording starts
     }
   }
 
@@ -299,6 +299,13 @@ const App: React.FC = () => {
         <h1 className="text-3xl font-bold text-center tracking-wider text-blue-400">
           טלפרומפטר מקצועי
         </h1>
+        {showVideoRecorder && (
+          <div className="text-center mt-2">
+            <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+              📹 מצב צילום פעיל - הטלפרומפטר ממשיך לעבוד
+            </span>
+          </div>
+        )}
       </header>
 
       {/* Main content */}
@@ -311,12 +318,31 @@ const App: React.FC = () => {
             onRecordAgain={handleRecordAgain}
           />
         ) : showVideoRecorder ? (
-          <VideoRecorder
-            isRecording={isRecording}
-            onStartRecording={handleStartRecording}
-            onStopRecording={handleStopRecording}
-            onVideoReady={handleVideoReady}
-          />
+          <div className="w-full h-full flex gap-4">
+            {/* Left side - Teleprompter */}
+            <div className="flex-1 h-full">
+              <Teleprompter
+                text={text}
+                isPlaying={isPlaying}
+                speed={speed}
+                fontSize={fontSize}
+                onTogglePlay={togglePlay}
+                onSpeedChange={adjustSpeed}
+                onFontSizeChange={adjustFontSize}
+                onReset={resetScroll}
+              />
+            </div>
+            
+            {/* Right side - Video Recorder */}
+            <div className="flex-1 h-full flex flex-col items-center justify-center">
+              <VideoRecorder
+                isRecording={isRecording}
+                onStartRecording={handleStartRecording}
+                onStopRecording={handleStopRecording}
+                onVideoReady={handleVideoReady}
+              />
+            </div>
+          </div>
         ) : (
           <Teleprompter
             text={text}
