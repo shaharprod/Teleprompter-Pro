@@ -35,12 +35,21 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         streamRef.current = stream
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
-          setIsCameraReady(true)
-          setError(null)
+          
+          // Wait for video to be ready
+          videoRef.current.onloadedmetadata = () => {
+            console.log('Video metadata loaded:', {
+              videoWidth: videoRef.current?.videoWidth,
+              videoHeight: videoRef.current?.videoHeight,
+              duration: videoRef.current?.duration
+            })
+            setIsCameraReady(true)
+            setError(null)
+          }
         }
       } catch (err) {
         console.error('Camera access error:', err)
@@ -62,9 +71,26 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
     if (!streamRef.current) return
 
     try {
+      // Check for supported video formats
+      let mimeType = 'video/webm;codecs=vp9'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm;codecs=vp8'
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm'
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/mp4'
+            if (!MediaRecorder.isTypeSupported(mimeType)) {
+              mimeType = '' // Let browser choose
+            }
+          }
+        }
+      }
+
+      console.log('Using MIME type:', mimeType || 'browser default')
+      
       // Record directly from camera stream
       const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9',
+        mimeType: mimeType,
         videoBitsPerSecond: 2500000
       })
       
@@ -74,20 +100,30 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunks.push(event.data)
+          console.log('Data chunk received:', event.data.size, 'bytes')
         }
       }
 
       mediaRecorder.onstop = () => {
-        const videoBlob = new Blob(chunks, { type: 'video/webm' })
+        const videoBlob = new Blob(chunks, { type: mimeType || 'video/webm' })
+        console.log('Video blob created:', videoBlob.size, 'bytes, type:', videoBlob.type)
+        
+        // Verify the blob has content
+        if (videoBlob.size === 0) {
+          setError('ההקלטה לא הצליחה - אין תוכן בסרטון')
+          return
+        }
+        
         onVideoReady(videoBlob)
       }
 
       mediaRecorder.start(100)
       onStartRecording()
       setError(null) // Clear any previous errors
+      console.log('Recording started with MIME type:', mimeType)
     } catch (err) {
       console.error('Recording start error:', err)
-      setError('שגיאה בהתחלת ההקלטה')
+      setError('שגיאה בהתחלת ההקלטה: ' + (err instanceof Error ? err.message : 'שגיאה לא ידועה'))
     }
   }
 
