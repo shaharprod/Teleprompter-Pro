@@ -74,54 +74,62 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
     try {
       const canvas = canvasRef.current
       const video = videoRef.current
-
+      
+      // Wait for video to be ready
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        setError('המצלמה עדיין לא מוכנה. אנא המתן רגע.')
+        return
+      }
+      
       // Create canvas stream for vertical recording
       const canvasStream = canvas.captureStream(30) // 30 FPS
       canvasStreamRef.current = canvasStream
-
+      
       // Combine canvas video with original audio
       const audioTracks = streamRef.current.getAudioTracks()
       audioTracks.forEach(track => {
         canvasStream.addTrack(track)
       })
-
+      
       // Start drawing to canvas
       const drawToCanvas = () => {
-        if (isRecording && canvas && video) {
+        if (canvas && video) {
           const ctx = canvas.getContext('2d')
           if (ctx) {
             // Clear canvas
             ctx.fillStyle = '#000000'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-
+            
             // Draw video centered and cropped to vertical format with zoom
             const videoWidth = video.videoWidth
             const videoHeight = video.videoHeight
-
+            
             // Calculate crop area with zoom level (smaller crop = more zoom out)
             const cropSize = Math.min(videoWidth, videoHeight * (9/16)) * zoomLevel
             const cropX = (videoWidth - cropSize) / 2
             const cropY = (videoHeight - cropSize * (16/9)) / 2
-
+            
             ctx.drawImage(
               video,
               cropX, cropY, cropSize, cropSize * (16/9), // Source crop
               0, 0, canvas.width, canvas.height // Destination
             )
           }
-          requestAnimationFrame(drawToCanvas)
+          if (isRecording) {
+            requestAnimationFrame(drawToCanvas)
+          }
         }
       }
-
+      
       // Start drawing
       drawToCanvas()
-
+      
       // Record canvas stream
       const mediaRecorder = new MediaRecorder(canvasStream, {
         mimeType: 'video/webm;codecs=vp9',
         videoBitsPerSecond: 2500000
       })
-
+      
       mediaRecorderRef.current = mediaRecorder
       const chunks: BlobPart[] = []
 
@@ -138,6 +146,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
       mediaRecorder.start(100)
       onStartRecording()
+      setError(null) // Clear any previous errors
     } catch (err) {
       console.error('Recording start error:', err)
       setError('שגיאה בהתחלת ההקלטה')

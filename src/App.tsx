@@ -291,7 +291,7 @@ const App: React.FC = () => {
   const getScreenSplitStyles = () => {
     const teleprompterWidth = screenSplitRatio
     const cameraWidth = 100 - screenSplitRatio
-    
+
     return {
       teleprompter: { width: `${teleprompterWidth}%` },
       camera: { width: `${cameraWidth}%` }
@@ -353,7 +353,7 @@ const App: React.FC = () => {
                 onReset={resetScroll}
               />
             </div>
-            
+
             {/* Right side - Video Recorder */}
             <div className="h-full flex flex-col items-center justify-center" style={getScreenSplitStyles().camera}>
               <VideoRecorder
