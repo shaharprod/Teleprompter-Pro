@@ -215,6 +215,9 @@ const App: React.FC = () => {
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null)
   const [showVideoPreview, setShowVideoPreview] = useState(false)
+  
+  // Screen width control states
+  const [screenSplitMode, setScreenSplitMode] = useState<'equal' | 'teleprompter-focused' | 'camera-focused'>('equal')
 
   const handleTextSubmit = (scriptText: string) => {
     setText(scriptText)
@@ -284,6 +287,34 @@ const App: React.FC = () => {
     }
   }
 
+  // Screen split control functions
+  const getScreenSplitClasses = () => {
+    switch (screenSplitMode) {
+      case 'teleprompter-focused':
+        return {
+          teleprompter: 'flex-[3]', // 75% width
+          camera: 'flex-[1]' // 25% width
+        }
+      case 'camera-focused':
+        return {
+          teleprompter: 'flex-[1]', // 25% width
+          camera: 'flex-[3]' // 75% width
+        }
+      default: // 'equal'
+        return {
+          teleprompter: 'flex-1', // 50% width
+          camera: 'flex-1' // 50% width
+        }
+    }
+  }
+
+  const cycleScreenSplitMode = () => {
+    const modes: Array<'equal' | 'teleprompter-focused' | 'camera-focused'> = ['equal', 'teleprompter-focused', 'camera-focused']
+    const currentIndex = modes.indexOf(screenSplitMode)
+    const nextIndex = (currentIndex + 1) % modes.length
+    setScreenSplitMode(modes[nextIndex])
+  }
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement)
@@ -301,8 +332,12 @@ const App: React.FC = () => {
         </h1>
         {showVideoRecorder && (
           <div className="text-center mt-2">
-            <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+            <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold mr-2">
               🤳 מצב סלפי פעיל - פורמט אנכי לרשתות חברתיות
+            </span>
+            <span className="bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+              {screenSplitMode === 'equal' ? '⚖️ חלוקה שווה' : 
+               screenSplitMode === 'teleprompter-focused' ? '📝 דגש טלפרומפטר' : '📹 דגש מצלמה'}
             </span>
           </div>
         )}
@@ -320,7 +355,7 @@ const App: React.FC = () => {
         ) : showVideoRecorder ? (
           <div className="w-full h-full flex gap-4">
             {/* Left side - Teleprompter */}
-            <div className="flex-1 h-full">
+            <div className={`h-full ${getScreenSplitClasses().teleprompter}`}>
               <Teleprompter
                 text={text}
                 isPlaying={isPlaying}
@@ -332,9 +367,9 @@ const App: React.FC = () => {
                 onReset={resetScroll}
               />
             </div>
-
+            
             {/* Right side - Video Recorder */}
-            <div className="flex-1 h-full flex flex-col items-center justify-center">
+            <div className={`h-full flex flex-col items-center justify-center ${getScreenSplitClasses().camera}`}>
               <VideoRecorder
                 isRecording={isRecording}
                 onStartRecording={handleStartRecording}
@@ -445,6 +480,24 @@ const App: React.FC = () => {
               <span>{showVideoRecorder ? '📹' : '🤳'}</span>
               <span className="hidden sm:inline">{showVideoRecorder ? 'סגור סלפי' : 'סלפי וידאו'}</span>
             </button>
+
+            {/* Screen Split Control - only show when video recorder is active */}
+            {showVideoRecorder && (
+              <button
+                onClick={cycleScreenSplitMode}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 min-h-[44px] shadow-lg"
+                title="שנה חלוקת מסך"
+              >
+                <span>
+                  {screenSplitMode === 'equal' ? '⚖️' : 
+                   screenSplitMode === 'teleprompter-focused' ? '📝' : '📹'}
+                </span>
+                <span className="hidden sm:inline">
+                  {screenSplitMode === 'equal' ? 'שווה' : 
+                   screenSplitMode === 'teleprompter-focused' ? 'טלפרומפטר' : 'מצלמה'}
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </footer>

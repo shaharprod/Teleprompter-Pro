@@ -106,7 +106,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   return (
     <div className="flex flex-col items-center gap-4 h-full w-full">
       {/* Camera Preview - Vertical format for social media */}
-      <div className="relative w-full max-w-sm mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
+      <div className="relative w-full max-w-xs mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
