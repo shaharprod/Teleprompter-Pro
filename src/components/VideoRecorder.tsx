@@ -23,12 +23,12 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   useEffect(() => {
     const initCamera = async () => {
       try {
-        // Request front camera for selfie with vertical format
+        // Request front camera for selfie with wider view to show shoulders
         const constraints = {
           video: {
             facingMode: { ideal: 'user' }, // Front camera for selfie
-            width: { ideal: 720 },
-            height: { ideal: 1280 } // Vertical format 9:16 for social media
+            width: { ideal: 1280 },
+            height: { ideal: 720 } // Landscape format first, then we'll crop to vertical
           },
           audio: true
         }
@@ -39,7 +39,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
-          
+
           // Wait for video to be ready
           videoRef.current.onloadedmetadata = () => {
             console.log('Video metadata loaded:', {
@@ -87,13 +87,13 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       }
 
       console.log('Using MIME type:', mimeType || 'browser default')
-      
+
       // Record directly from camera stream
       const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType: mimeType,
         videoBitsPerSecond: 2500000
       })
-      
+
       mediaRecorderRef.current = mediaRecorder
       const chunks: BlobPart[] = []
 
@@ -107,13 +107,13 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       mediaRecorder.onstop = () => {
         const videoBlob = new Blob(chunks, { type: mimeType || 'video/webm' })
         console.log('Video blob created:', videoBlob.size, 'bytes, type:', videoBlob.type)
-        
+
         // Verify the blob has content
         if (videoBlob.size === 0) {
           setError('ההקלטה לא הצליחה - אין תוכן בסרטון')
           return
         }
-        
+
         onVideoReady(videoBlob)
       }
 
@@ -144,8 +144,8 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-4 h-full w-full">
-      {/* Camera Preview - Vertical format for social media */}
-      <div className="relative w-full max-w-xs mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
+      {/* Camera Preview - Wider view to show shoulders */}
+      <div className="relative w-full max-w-md mx-auto bg-black rounded-lg overflow-hidden aspect-[4/3]">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -217,6 +217,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       <div className="text-center text-sm text-gray-400">
         <p>🤳 מצלמה קדמית לסלפי</p>
         <p>📱 הקלטה בפורמט אנכי 9:16</p>
+        <p>👔 תצוגה רחבה להצגת כתפיים</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
