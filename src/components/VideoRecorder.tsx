@@ -23,12 +23,12 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   useEffect(() => {
     const initCamera = async () => {
       try {
-        // Request back camera specifically
+        // Request front camera for selfie and vertical format for social media
         const constraints = {
           video: {
-            facingMode: { ideal: 'environment' }, // Back camera
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
+            facingMode: { ideal: 'user' }, // Front camera for selfie
+            width: { ideal: 1080 },
+            height: { ideal: 1920 } // Vertical format 9:16 for social media
           },
           audio: true
         }
@@ -105,8 +105,8 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-4 h-full w-full">
-      {/* Camera Preview */}
-      <div className="relative w-full h-full max-h-96 bg-black rounded-lg overflow-hidden">
+      {/* Camera Preview - Vertical format for social media */}
+      <div className="relative w-full max-w-sm mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -173,8 +173,9 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
       {/* Instructions */}
       <div className="text-center text-sm text-gray-400">
-        <p>📱 לחץ על הכפתור להתחלת הקלטת וידאו</p>
-        <p>🎬 הקלטה עם מצלמה אחורית באיכות גבוהה</p>
+        <p>🤳 מצלמה קדמית לסלפי</p>
+        <p>📱 פורמט אנכי לרשתות חברתיות</p>
+        <p>🎬 מושלם ל-TikTok, Instagram, YouTube Shorts</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>

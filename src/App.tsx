@@ -302,7 +302,7 @@ const App: React.FC = () => {
         {showVideoRecorder && (
           <div className="text-center mt-2">
             <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-              📹 מצב צילום פעיל - הטלפרומפטר ממשיך לעבוד
+              🤳 מצב סלפי פעיל - פורמט אנכי לרשתות חברתיות
             </span>
           </div>
         )}
@@ -332,7 +332,7 @@ const App: React.FC = () => {
                 onReset={resetScroll}
               />
             </div>
-            
+
             {/* Right side - Video Recorder */}
             <div className="flex-1 h-full flex flex-col items-center justify-center">
               <VideoRecorder
@@ -442,8 +442,8 @@ const App: React.FC = () => {
                   : 'bg-purple-600 hover:bg-purple-700 text-white'
               }`}
             >
-              <span>{showVideoRecorder ? '📹' : '🎥'}</span>
-              <span className="hidden sm:inline">{showVideoRecorder ? 'סגור מצלמה' : 'צילום וידאו'}</span>
+              <span>{showVideoRecorder ? '📹' : '🤳'}</span>
+              <span className="hidden sm:inline">{showVideoRecorder ? 'סגור סלפי' : 'סלפי וידאו'}</span>
             </button>
           </div>
         </div>
