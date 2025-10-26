@@ -215,9 +215,9 @@ const App: React.FC = () => {
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null)
   const [showVideoPreview, setShowVideoPreview] = useState(false)
-  
+
   // Screen width control states
-  const [screenSplitMode, setScreenSplitMode] = useState<'equal' | 'teleprompter-focused' | 'camera-focused'>('equal')
+  const [screenSplitRatio, setScreenSplitRatio] = useState(50) // 0-100, where 50 is equal split
 
   const handleTextSubmit = (scriptText: string) => {
     setText(scriptText)
@@ -289,30 +289,17 @@ const App: React.FC = () => {
 
   // Screen split control functions
   const getScreenSplitClasses = () => {
-    switch (screenSplitMode) {
-      case 'teleprompter-focused':
-        return {
-          teleprompter: 'flex-[3]', // 75% width
-          camera: 'flex-[1]' // 25% width
-        }
-      case 'camera-focused':
-        return {
-          teleprompter: 'flex-[1]', // 25% width
-          camera: 'flex-[3]' // 75% width
-        }
-      default: // 'equal'
-        return {
-          teleprompter: 'flex-1', // 50% width
-          camera: 'flex-1' // 50% width
-        }
+    const teleprompterWidth = screenSplitRatio
+    const cameraWidth = 100 - screenSplitRatio
+    
+    return {
+      teleprompter: `flex-[${teleprompterWidth}]`,
+      camera: `flex-[${cameraWidth}]`
     }
   }
 
-  const cycleScreenSplitMode = () => {
-    const modes: Array<'equal' | 'teleprompter-focused' | 'camera-focused'> = ['equal', 'teleprompter-focused', 'camera-focused']
-    const currentIndex = modes.indexOf(screenSplitMode)
-    const nextIndex = (currentIndex + 1) % modes.length
-    setScreenSplitMode(modes[nextIndex])
+  const adjustScreenSplit = (ratio: number) => {
+    setScreenSplitRatio(Math.max(10, Math.min(90, ratio))) // Limit between 10% and 90%
   }
 
   useEffect(() => {
@@ -336,8 +323,7 @@ const App: React.FC = () => {
               🤳 מצב סלפי פעיל - פורמט אנכי לרשתות חברתיות
             </span>
             <span className="bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-              {screenSplitMode === 'equal' ? '⚖️ חלוקה שווה' : 
-               screenSplitMode === 'teleprompter-focused' ? '📝 דגש טלפרומפטר' : '📹 דגש מצלמה'}
+              📐 טלפרומפטר: {screenSplitRatio}% | מצלמה: {100 - screenSplitRatio}%
             </span>
           </div>
         )}
@@ -367,7 +353,7 @@ const App: React.FC = () => {
                 onReset={resetScroll}
               />
             </div>
-            
+
             {/* Right side - Video Recorder */}
             <div className={`h-full flex flex-col items-center justify-center ${getScreenSplitClasses().camera}`}>
               <VideoRecorder
@@ -483,20 +469,24 @@ const App: React.FC = () => {
 
             {/* Screen Split Control - only show when video recorder is active */}
             {showVideoRecorder && (
-              <button
-                onClick={cycleScreenSplitMode}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 min-h-[44px] shadow-lg"
-                title="שנה חלוקת מסך"
-              >
-                <span>
-                  {screenSplitMode === 'equal' ? '⚖️' : 
-                   screenSplitMode === 'teleprompter-focused' ? '📝' : '📹'}
+              <div className="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-lg">
+                <label className="text-sm font-medium text-gray-200 min-w-20">
+                  רוחב מסך:
+                </label>
+                <input
+                  type="range"
+                  min="10"
+                  max="90"
+                  step="5"
+                  value={screenSplitRatio}
+                  onChange={(e) => adjustScreenSplit(parseInt(e.target.value))}
+                  className="cursor-pointer w-32 accent-orange-500"
+                  aria-label="שנה רוחב מסך טלפרומפטר"
+                />
+                <span className="text-white font-bold min-w-12 text-center text-sm bg-gray-600 px-2 py-1 rounded">
+                  {screenSplitRatio}%
                 </span>
-                <span className="hidden sm:inline">
-                  {screenSplitMode === 'equal' ? 'שווה' : 
-                   screenSplitMode === 'teleprompter-focused' ? 'טלפרומפטר' : 'מצלמה'}
-                </span>
-              </button>
+              </div>
             )}
           </div>
         </div>

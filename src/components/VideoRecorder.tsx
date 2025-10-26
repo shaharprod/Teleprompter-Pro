@@ -27,8 +27,8 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         const constraints = {
           video: {
             facingMode: { ideal: 'user' }, // Front camera for selfie
-            width: { ideal: 1080 },
-            height: { ideal: 1920 } // Vertical format 9:16 for social media
+            width: { ideal: 720 },
+            height: { ideal: 1280 } // Vertical format 9:16 for social media
           },
           audio: true
         }
@@ -112,6 +112,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
           className="w-full h-full object-cover"
           playsInline
           muted
+          style={{ transform: 'scaleX(-1)' }} // Mirror effect for selfie
         />
 
         {/* Recording indicator */}
