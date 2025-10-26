@@ -20,6 +20,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   const canvasStreamRef = useRef<MediaStream | null>(null)
   const [isCameraReady, setIsCameraReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [zoomLevel, setZoomLevel] = useState(0.7) // 0.7 = zoom out to show shoulders
 
   // Initialize camera
   useEffect(() => {
@@ -37,13 +38,13 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         streamRef.current = stream
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
           setIsCameraReady(true)
           setError(null)
-          
+
           // Setup canvas for vertical recording
           if (canvasRef.current) {
             const canvas = canvasRef.current
@@ -73,17 +74,17 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
     try {
       const canvas = canvasRef.current
       const video = videoRef.current
-      
+
       // Create canvas stream for vertical recording
       const canvasStream = canvas.captureStream(30) // 30 FPS
       canvasStreamRef.current = canvasStream
-      
+
       // Combine canvas video with original audio
       const audioTracks = streamRef.current.getAudioTracks()
       audioTracks.forEach(track => {
         canvasStream.addTrack(track)
       })
-      
+
       // Start drawing to canvas
       const drawToCanvas = () => {
         if (isRecording && canvas && video) {
@@ -92,13 +93,13 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
             // Clear canvas
             ctx.fillStyle = '#000000'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            
-            // Draw video centered and cropped to vertical format
+
+            // Draw video centered and cropped to vertical format with zoom
             const videoWidth = video.videoWidth
             const videoHeight = video.videoHeight
             
-            // Calculate crop area (center crop)
-            const cropSize = Math.min(videoWidth, videoHeight * (9/16))
+            // Calculate crop area with zoom level (smaller crop = more zoom out)
+            const cropSize = Math.min(videoWidth, videoHeight * (9/16)) * zoomLevel
             const cropX = (videoWidth - cropSize) / 2
             const cropY = (videoHeight - cropSize * (16/9)) / 2
             
@@ -111,16 +112,16 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
           requestAnimationFrame(drawToCanvas)
         }
       }
-      
+
       // Start drawing
       drawToCanvas()
-      
+
       // Record canvas stream
       const mediaRecorder = new MediaRecorder(canvasStream, {
         mimeType: 'video/webm;codecs=vp9',
         videoBitsPerSecond: 2500000
       })
-      
+
       mediaRecorderRef.current = mediaRecorder
       const chunks: BlobPart[] = []
 
@@ -169,7 +170,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
           muted
           style={{ transform: 'scaleX(-1)' }} // Mirror effect for selfie
         />
-        
+
         {/* Hidden canvas for recording */}
         <canvas
           ref={canvasRef}
@@ -235,11 +236,31 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         )}
       </button>
 
+      {/* Zoom Control */}
+      <div className="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-lg">
+        <label className="text-sm font-medium text-gray-200 min-w-16">
+          זום:
+        </label>
+        <input
+          type="range"
+          min="0.5"
+          max="1.2"
+          step="0.1"
+          value={zoomLevel}
+          onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
+          className="cursor-pointer w-24 accent-blue-500"
+          aria-label="שנה רמת זום"
+        />
+        <span className="text-white font-bold min-w-10 text-center text-sm bg-gray-600 px-2 py-1 rounded">
+          {zoomLevel.toFixed(1)}x
+        </span>
+      </div>
+
       {/* Instructions */}
       <div className="text-center text-sm text-gray-400">
         <p>🤳 מצלמה קדמית לסלפי</p>
         <p>📱 הקלטה בפורמט אנכי 9:16</p>
-        <p>🎬 Canvas crop לרוחב אנכי מושלם</p>
+        <p>🔍 זום אאוט להצגת כתפיים</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
