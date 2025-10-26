@@ -68,13 +68,21 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
     }
   }, [isPlaying, speed, isMobile, onTogglePlay])
 
-  // Reset scroll when text changes
+  // Reset scroll when text changes or when stopped
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = 0
       setScrollPosition(0)
     }
   }, [text])
+
+  // Reset scroll when stopped (for reset button)
+  useEffect(() => {
+    if (!isPlaying && scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+      setScrollPosition(0)
+    }
+  }, [isPlaying])
 
   // Touch controls
   const handleTouchStart = () => {
@@ -228,7 +236,10 @@ const App: React.FC = () => {
 
   const togglePlay = () => setIsPlaying(prev => !prev)
 
-  const resetScroll = () => setIsPlaying(false)
+  const resetScroll = () => {
+    setIsPlaying(false)
+    // The Teleprompter component will handle the actual scroll reset
+  }
 
   const toggleFullscreen = async () => {
     try {
