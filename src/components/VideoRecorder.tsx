@@ -14,43 +14,33 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   onVideoReady
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const canvasStreamRef = useRef<MediaStream | null>(null)
   const [isCameraReady, setIsCameraReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [zoomLevel, setZoomLevel] = useState(0.7) // 0.7 = zoom out to show shoulders
 
   // Initialize camera
   useEffect(() => {
     const initCamera = async () => {
       try {
-        // Request front camera - we'll crop it to vertical format
+        // Request front camera for selfie with vertical format
         const constraints = {
           video: {
             facingMode: { ideal: 'user' }, // Front camera for selfie
-            width: { ideal: 1280 },
-            height: { ideal: 720 } // Get landscape format first
+            width: { ideal: 720 },
+            height: { ideal: 1280 } // Vertical format 9:16 for social media
           },
           audio: true
         }
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints)
         streamRef.current = stream
-
+        
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play()
           setIsCameraReady(true)
           setError(null)
-
-          // Setup canvas for vertical recording
-          if (canvasRef.current) {
-            const canvas = canvasRef.current
-            canvas.width = 720  // Vertical width
-            canvas.height = 1280 // Vertical height
-          }
         }
       } catch (err) {
         console.error('Camera access error:', err)
@@ -69,63 +59,11 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
   }, [])
 
   const startRecording = async () => {
-    if (!streamRef.current || !videoRef.current || !canvasRef.current) return
+    if (!streamRef.current) return
 
     try {
-      const canvas = canvasRef.current
-      const video = videoRef.current
-      
-      // Wait for video to be ready
-      if (video.videoWidth === 0 || video.videoHeight === 0) {
-        setError('המצלמה עדיין לא מוכנה. אנא המתן רגע.')
-        return
-      }
-      
-      // Create canvas stream for vertical recording
-      const canvasStream = canvas.captureStream(30) // 30 FPS
-      canvasStreamRef.current = canvasStream
-      
-      // Combine canvas video with original audio
-      const audioTracks = streamRef.current.getAudioTracks()
-      audioTracks.forEach(track => {
-        canvasStream.addTrack(track)
-      })
-      
-      // Start drawing to canvas
-      const drawToCanvas = () => {
-        if (canvas && video) {
-          const ctx = canvas.getContext('2d')
-          if (ctx) {
-            // Clear canvas
-            ctx.fillStyle = '#000000'
-            ctx.fillRect(0, 0, canvas.width, canvas.height)
-            
-            // Draw video centered and cropped to vertical format with zoom
-            const videoWidth = video.videoWidth
-            const videoHeight = video.videoHeight
-            
-            // Calculate crop area with zoom level (smaller crop = more zoom out)
-            const cropSize = Math.min(videoWidth, videoHeight * (9/16)) * zoomLevel
-            const cropX = (videoWidth - cropSize) / 2
-            const cropY = (videoHeight - cropSize * (16/9)) / 2
-            
-            ctx.drawImage(
-              video,
-              cropX, cropY, cropSize, cropSize * (16/9), // Source crop
-              0, 0, canvas.width, canvas.height // Destination
-            )
-          }
-          if (isRecording) {
-            requestAnimationFrame(drawToCanvas)
-          }
-        }
-      }
-      
-      // Start drawing
-      drawToCanvas()
-      
-      // Record canvas stream
-      const mediaRecorder = new MediaRecorder(canvasStream, {
+      // Record directly from camera stream
+      const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType: 'video/webm;codecs=vp9',
         videoBitsPerSecond: 2500000
       })
@@ -180,13 +118,6 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
           style={{ transform: 'scaleX(-1)' }} // Mirror effect for selfie
         />
 
-        {/* Hidden canvas for recording */}
-        <canvas
-          ref={canvasRef}
-          className="hidden"
-          width={720}
-          height={1280}
-        />
 
         {/* Recording indicator */}
         {isRecording && (
@@ -245,31 +176,11 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         )}
       </button>
 
-      {/* Zoom Control */}
-      <div className="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-lg">
-        <label className="text-sm font-medium text-gray-200 min-w-16">
-          זום:
-        </label>
-        <input
-          type="range"
-          min="0.5"
-          max="1.2"
-          step="0.1"
-          value={zoomLevel}
-          onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
-          className="cursor-pointer w-24 accent-blue-500"
-          aria-label="שנה רמת זום"
-        />
-        <span className="text-white font-bold min-w-10 text-center text-sm bg-gray-600 px-2 py-1 rounded">
-          {zoomLevel.toFixed(1)}x
-        </span>
-      </div>
 
       {/* Instructions */}
       <div className="text-center text-sm text-gray-400">
         <p>🤳 מצלמה קדמית לסלפי</p>
         <p>📱 הקלטה בפורמט אנכי 9:16</p>
-        <p>🔍 זום אאוט להצגת כתפיים</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
