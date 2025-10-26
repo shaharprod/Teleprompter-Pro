@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/Teleprompter-Pro/sw.js', { scope: '/Teleprompter-Pro/' })})}
