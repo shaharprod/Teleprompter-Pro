@@ -162,7 +162,7 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
           <input
             type="range"
             min="0.1"
-            max="5"
+            max="10"
             step="0.1"
             value={speed}
             onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
@@ -244,7 +244,7 @@ const App: React.FC = () => {
     }
   }
 
-  const adjustSpeed = (newSpeed: number) => setSpeed(Math.max(0.1, Math.min(5, newSpeed)))
+  const adjustSpeed = (newSpeed: number) => setSpeed(Math.max(0.1, Math.min(10, newSpeed)))
   const adjustFontSize = (newSize: number) => setFontSize(Math.max(2, Math.min(12, newSize)))
 
   // Video recording functions
