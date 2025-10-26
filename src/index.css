@@ -7,17 +7,17 @@
   input, textarea, select {
     font-size: 16px !important;
   }
-  
+
   button {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   * {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
   }
-  
+
   button {
     -webkit-user-select: none;
     -moz-user-select: none;
