@@ -42,10 +42,10 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
   return (
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
       {/* Video Preview */}
-      <div className="relative w-full bg-black rounded-lg overflow-hidden">
+      <div className="relative w-full max-w-sm mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
         <video
           ref={videoRef}
-          className="w-full h-auto"
+          className="w-full h-full object-cover"
           controls
           playsInline
         />

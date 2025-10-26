@@ -291,7 +291,7 @@ const App: React.FC = () => {
   const getScreenSplitClasses = () => {
     const teleprompterWidth = screenSplitRatio
     const cameraWidth = 100 - screenSplitRatio
-    
+
     return {
       teleprompter: `flex-[${teleprompterWidth}]`,
       camera: `flex-[${cameraWidth}]`

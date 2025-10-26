@@ -27,8 +27,9 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         const constraints = {
           video: {
             facingMode: { ideal: 'user' }, // Front camera for selfie
-            width: { ideal: 720 },
-            height: { ideal: 1280 } // Vertical format 9:16 for social media
+            width: { ideal: 720, min: 480, max: 1080 },
+            height: { ideal: 1280, min: 640, max: 1920 }, // Vertical format 9:16 for social media
+            aspectRatio: { ideal: 9/16 } // Force vertical aspect ratio
           },
           audio: true
         }
@@ -62,10 +63,12 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
     if (!streamRef.current || !videoRef.current) return
 
     try {
+      // Force vertical recording format
       const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9'
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 2500000 // Higher quality for vertical video
       })
-
+      
       mediaRecorderRef.current = mediaRecorder
       const chunks: BlobPart[] = []
 
@@ -80,7 +83,7 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
         onVideoReady(videoBlob)
       }
 
-      mediaRecorder.start()
+      mediaRecorder.start(100) // Record in 100ms chunks for better quality
       onStartRecording()
     } catch (err) {
       console.error('Recording start error:', err)
@@ -175,8 +178,8 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
       {/* Instructions */}
       <div className="text-center text-sm text-gray-400">
         <p>🤳 מצלמה קדמית לסלפי</p>
-        <p>📱 פורמט אנכי לרשתות חברתיות</p>
-        <p>🎬 מושלם ל-TikTok, Instagram, YouTube Shorts</p>
+        <p>📱 פורמט אנכי 9:16 לרשתות חברתיות</p>
+        <p>🎬 הקלטה בפורמט אנכי מושלם</p>
         <p>📺 הטלפרומפטר ממשיך לעבוד במסך השמאלי</p>
       </div>
     </div>
