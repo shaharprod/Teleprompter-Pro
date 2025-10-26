@@ -97,12 +97,12 @@ const VideoRecorder: React.FC<VideoRecorderProps> = ({
             // Draw video centered and cropped to vertical format with zoom
             const videoWidth = video.videoWidth
             const videoHeight = video.videoHeight
-            
+
             // Calculate crop area with zoom level (smaller crop = more zoom out)
             const cropSize = Math.min(videoWidth, videoHeight * (9/16)) * zoomLevel
             const cropX = (videoWidth - cropSize) / 2
             const cropY = (videoHeight - cropSize * (16/9)) / 2
-            
+
             ctx.drawImage(
               video,
               cropX, cropY, cropSize, cropSize * (16/9), // Source crop

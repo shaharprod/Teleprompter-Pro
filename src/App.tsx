@@ -288,13 +288,13 @@ const App: React.FC = () => {
   }
 
   // Screen split control functions
-  const getScreenSplitClasses = () => {
+  const getScreenSplitStyles = () => {
     const teleprompterWidth = screenSplitRatio
     const cameraWidth = 100 - screenSplitRatio
-
+    
     return {
-      teleprompter: `flex-[${teleprompterWidth}]`,
-      camera: `flex-[${cameraWidth}]`
+      teleprompter: { width: `${teleprompterWidth}%` },
+      camera: { width: `${cameraWidth}%` }
     }
   }
 
@@ -341,7 +341,7 @@ const App: React.FC = () => {
         ) : showVideoRecorder ? (
           <div className="w-full h-full flex gap-4">
             {/* Left side - Teleprompter */}
-            <div className={`h-full ${getScreenSplitClasses().teleprompter}`}>
+            <div className="h-full" style={getScreenSplitStyles().teleprompter}>
               <Teleprompter
                 text={text}
                 isPlaying={isPlaying}
@@ -353,9 +353,9 @@ const App: React.FC = () => {
                 onReset={resetScroll}
               />
             </div>
-
+            
             {/* Right side - Video Recorder */}
-            <div className={`h-full flex flex-col items-center justify-center ${getScreenSplitClasses().camera}`}>
+            <div className="h-full flex flex-col items-center justify-center" style={getScreenSplitStyles().camera}>
               <VideoRecorder
                 isRecording={isRecording}
                 onStartRecording={handleStartRecording}
