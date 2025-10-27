@@ -353,14 +353,14 @@ const App: React.FC = () => {
 
           {/* Main content */}
           <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden relative">
-            {/* Desktop Controls - Bottom overlay */}
+            {/* Desktop Controls - Bottom overlay - UPDATED */}
             {!isMobile && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-4 rounded-2xl shadow-2xl border border-gray-600">
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-4 rounded-2xl shadow-2xl border border-gray-600">
                 <div className="flex items-center gap-8">
                   {/* Speed Control */}
                   <div className="flex items-center gap-4">
                     <label className="text-sm font-bold text-gray-100 min-w-20">
-                      מהירות:
+                      מהירות גלילה:
                     </label>
                     <input
                       type="range"
@@ -380,7 +380,7 @@ const App: React.FC = () => {
                   {/* Font Size Control */}
                   <div className="flex items-center gap-4">
                     <label className="text-sm font-bold text-gray-100 min-w-16">
-                      גופן:
+                      גודל גופן:
                     </label>
                     <input
                       type="range"
