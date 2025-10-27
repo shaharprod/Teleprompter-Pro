@@ -40,23 +40,8 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 max-w-xl mx-auto relative z-50 mb-20">
-      {/* Video Preview */}
-      <div className="relative w-full max-w-xs mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          controls
-          playsInline
-        />
-
-        {/* Video info */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">
-          📹 סרטון מוכן
-        </div>
-      </div>
-
-      {/* Action Buttons */}
+    <div className="flex flex-col items-center gap-4 max-w-xl mx-auto relative z-50 mb-8">
+      {/* Action Buttons - Move to top */}
       <div className="flex flex-wrap gap-3 justify-center bg-gray-900 bg-opacity-95 backdrop-blur-lg p-4 rounded-xl border-2 border-gray-500 shadow-2xl">
         <button
           onClick={handleSave}
@@ -81,6 +66,21 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
           <span>❌</span>
           <span>ביטול</span>
         </button>
+      </div>
+
+      {/* Video Preview */}
+      <div className="relative w-full max-w-xs mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          controls
+          playsInline
+        />
+
+        {/* Video info */}
+        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">
+          📹 סרטון מוכן
+        </div>
       </div>
 
       {/* Hidden download link */}
