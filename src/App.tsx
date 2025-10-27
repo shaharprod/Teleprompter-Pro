@@ -51,14 +51,14 @@ const Teleprompter: React.FC<TeleprompterProps> = ({
           const maxScroll = scrollRef.current.scrollHeight - scrollRef.current.clientHeight
 
           if (currentScroll < maxScroll) {
-            const scrollAmount = isMobile ? speed * 2 : speed * 1
+            const scrollAmount = isMobile ? speed * 3 : speed * 2 // Better mobile/desktop ratio
             scrollRef.current.scrollTop += scrollAmount
             setScrollPosition(scrollRef.current.scrollTop)
           } else {
             onTogglePlay()
           }
         }
-      }, 50)
+      }, 16) // 60 FPS for smoother scrolling
     }
 
     return () => {
@@ -218,7 +218,7 @@ const App: React.FC = () => {
   const [fontSize, setFontSize] = useState(4)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  
+
   // Video recording states
   const [isRecording, setIsRecording] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
