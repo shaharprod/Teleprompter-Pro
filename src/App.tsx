@@ -256,7 +256,7 @@ const App: React.FC = () => {
     }
   }
 
-  const adjustSpeed = (newSpeed: number) => setSpeed(Math.max(0.05, Math.min(50, newSpeed)))
+  const adjustSpeed = (newSpeed: number) => setSpeed(Math.max(0.01, Math.min(100, newSpeed)))
   const adjustFontSize = (newSize: number) => setFontSize(Math.max(2, Math.min(12, newSize)))
 
   // Video recording functions
@@ -355,48 +355,68 @@ const App: React.FC = () => {
           <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden relative">
             {/* Desktop Speed Control - Left side */}
             {!isMobile && (
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-xl">
-                <div className="flex flex-col items-center gap-4">
-                  <label className="text-sm font-medium text-gray-200">
-                    מהירות:
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-gray-600">
+                <div className="flex flex-col items-center gap-6">
+                  <label className="text-lg font-bold text-gray-100">
+                    מהירות גלילה
                   </label>
-                  <input
-                    type="range"
-                    min="0.05"
-                    max="50"
-                    step="0.1"
-                    value={speed}
-                    onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
-                    className="cursor-pointer w-32 accent-green-500 transform -rotate-90"
-                    aria-label="שנה מהירות גלילה"
-                  />
-                  <span className="text-white font-bold text-sm bg-gray-700 px-2 py-1 rounded">
-                    {speed.toFixed(1)}x
-                  </span>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="0.01"
+                      max="100"
+                      step="0.1"
+                      value={speed}
+                      onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
+                      className="cursor-pointer w-40 h-2 accent-green-500 transform -rotate-90"
+                      style={{
+                        background: `linear-gradient(to right, #10b981 0%, #10b981 ${(speed / 100) * 100}%, #374151 ${(speed / 100) * 100}%, #374151 100%)`
+                      }}
+                      aria-label="שנה מהירות גלילה"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {speed.toFixed(1)}x
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {speed < 0.5 ? 'איטי מאוד' : speed < 2 ? 'איטי' : speed < 10 ? 'רגיל' : speed < 50 ? 'מהיר' : 'מהיר מאוד'}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Desktop Font Size Control - Right side */}
             {!isMobile && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-xl">
-                <div className="flex flex-col items-center gap-4">
-                  <label className="text-sm font-medium text-gray-200">
-                    גופן:
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-gray-600">
+                <div className="flex flex-col items-center gap-6">
+                  <label className="text-lg font-bold text-gray-100">
+                    גודל גופן
                   </label>
-                  <input
-                    type="range"
-                    min="2"
-                    max="12"
-                    step="0.5"
-                    value={fontSize}
-                    onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
-                    className="cursor-pointer w-32 accent-blue-500 transform -rotate-90"
-                    aria-label="שנה גודל גופן"
-                  />
-                  <span className="text-white font-bold text-sm bg-gray-700 px-2 py-1 rounded">
-                    {fontSize}rem
-                  </span>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="2"
+                      max="12"
+                      step="0.5"
+                      value={fontSize}
+                      onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
+                      className="cursor-pointer w-40 h-2 accent-blue-500 transform -rotate-90"
+                      style={{
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((fontSize - 2) / 10) * 100}%, #374151 ${((fontSize - 2) / 10) * 100}%, #374151 100%)`
+                      }}
+                      aria-label="שנה גודל גופן"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                      {fontSize}rem
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {fontSize < 3 ? 'קטן' : fontSize < 6 ? 'בינוני' : fontSize < 9 ? 'גדול' : 'גדול מאוד'}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -544,8 +564,8 @@ const App: React.FC = () => {
                 </label>
                 <input
                   type="range"
-                  min="0.05"
-                  max="50"
+                  min="0.01"
+                  max="100"
                   step="0.1"
                   value={speed}
                   onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
