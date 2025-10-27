@@ -353,14 +353,14 @@ const App: React.FC = () => {
 
           {/* Main content */}
           <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden relative">
-            {/* Desktop Controls - Bottom overlay - UPDATED */}
+            {/* Desktop Controls - Bottom overlay - COMPACT */}
             {!isMobile && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-4 rounded-2xl shadow-2xl border border-gray-600">
-                <div className="flex items-center gap-8">
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-30 bg-gray-800 bg-opacity-90 backdrop-blur-lg p-2 rounded-lg shadow-xl border border-gray-600">
+                <div className="flex items-center gap-4">
                   {/* Speed Control */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm font-bold text-gray-100 min-w-20">
-                      מהירות גלילה:
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-medium text-gray-200 min-w-12">
+                      מהירות:
                     </label>
                     <input
                       type="range"
@@ -369,18 +369,18 @@ const App: React.FC = () => {
                       step="0.1"
                       value={speed}
                       onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
-                      className="cursor-pointer w-32 accent-green-500"
+                      className="cursor-pointer w-20 accent-green-500"
                       aria-label="שנה מהירות גלילה"
                     />
-                    <span className="text-green-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded min-w-12 text-center">
+                    <span className="text-green-400 font-bold text-xs bg-gray-700 px-1 py-0.5 rounded min-w-8 text-center">
                       {speed.toFixed(1)}x
                     </span>
                   </div>
 
                   {/* Font Size Control */}
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm font-bold text-gray-100 min-w-16">
-                      גודל גופן:
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-medium text-gray-200 min-w-10">
+                      גופן:
                     </label>
                     <input
                       type="range"
@@ -389,10 +389,10 @@ const App: React.FC = () => {
                       step="0.5"
                       value={fontSize}
                       onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
-                      className="cursor-pointer w-32 accent-blue-500"
+                      className="cursor-pointer w-20 accent-blue-500"
                       aria-label="שנה גודל גופן"
                     />
-                    <span className="text-blue-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded min-w-12 text-center">
+                    <span className="text-blue-400 font-bold text-xs bg-gray-700 px-1 py-0.5 rounded min-w-8 text-center">
                       {fontSize}rem
                     </span>
                   </div>
@@ -447,7 +447,7 @@ const App: React.FC = () => {
       </main>
 
       {/* Footer controls */}
-      <footer className="bg-gray-800 bg-opacity-70 backdrop-blur-lg p-3 sm:p-4 border-t border-gray-700 z-10">
+      <footer className="bg-gray-800 bg-opacity-70 backdrop-blur-lg p-2 sm:p-3 border-t border-gray-700 z-10">
         <div className="max-w-4xl mx-auto w-full">
           {/* Text input */}
           <form onSubmit={(e) => { e.preventDefault(); handleTextSubmit(text) }} className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center mb-4">
@@ -455,9 +455,9 @@ const App: React.FC = () => {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="הדביקו את הסקריפט שלכם כאן או כתבו אחד חדש..."
-              className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow text-right resize-none h-24 sm:h-32 w-full"
+              className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow text-right resize-none h-16 sm:h-20 w-full"
             />
-            <div className="flex flex-col gap-2 sm:gap-4 h-24 sm:h-32">
+            <div className="flex flex-col gap-2 sm:gap-4 h-16 sm:h-20">
               <button
                 type="submit"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 h-1/2 w-full sm:w-auto min-h-[44px]"
