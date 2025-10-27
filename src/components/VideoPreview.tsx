@@ -40,9 +40,9 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto relative z-50">
+    <div className="flex flex-col items-center gap-4 max-w-xl mx-auto relative z-50">
       {/* Video Preview */}
-      <div className="relative w-full max-w-sm mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
+      <div className="relative w-full max-w-xs mx-auto bg-black rounded-lg overflow-hidden aspect-[9/16]">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -57,10 +57,10 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-4 justify-center bg-gray-800 bg-opacity-90 backdrop-blur-lg p-4 rounded-lg border border-gray-600">
+      <div className="flex flex-wrap gap-3 justify-center bg-gray-800 bg-opacity-90 backdrop-blur-lg p-3 rounded-lg border border-gray-600">
         <button
           onClick={handleSave}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm"
         >
           <span>💾</span>
           <span>שמור סרטון</span>
@@ -68,7 +68,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
 
         <button
           onClick={onRecordAgain}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center gap-2"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm"
         >
           <span>🔄</span>
           <span>הקלטה חדשה</span>
@@ -76,7 +76,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
 
         <button
           onClick={onCancel}
-          className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center gap-2"
+          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm"
         >
           <span>❌</span>
           <span>ביטול</span>
