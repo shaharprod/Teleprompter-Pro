@@ -353,14 +353,15 @@ const App: React.FC = () => {
 
           {/* Main content */}
           <main className="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden relative">
-            {/* Desktop Speed Control - Left side */}
+            {/* Desktop Controls - Bottom overlay */}
             {!isMobile && (
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-gray-600">
-                <div className="flex flex-col items-center gap-6">
-                  <label className="text-lg font-bold text-gray-100">
-                    מהירות גלילה
-                  </label>
-                  <div className="relative">
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-4 rounded-2xl shadow-2xl border border-gray-600">
+                <div className="flex items-center gap-8">
+                  {/* Speed Control */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-bold text-gray-100 min-w-20">
+                      מהירות:
+                    </label>
                     <input
                       type="range"
                       min="0.01"
@@ -368,33 +369,19 @@ const App: React.FC = () => {
                       step="0.1"
                       value={speed}
                       onChange={(e) => adjustSpeed(parseFloat(e.target.value))}
-                      className="cursor-pointer w-40 h-2 accent-green-500 transform -rotate-90"
-                      style={{
-                        background: `linear-gradient(to right, #10b981 0%, #10b981 ${(speed / 100) * 100}%, #374151 ${(speed / 100) * 100}%, #374151 100%)`
-                      }}
+                      className="cursor-pointer w-32 accent-green-500"
                       aria-label="שנה מהירות גלילה"
                     />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400 mb-1">
+                    <span className="text-green-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded min-w-12 text-center">
                       {speed.toFixed(1)}x
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {speed < 0.5 ? 'איטי מאוד' : speed < 2 ? 'איטי' : speed < 10 ? 'רגיל' : speed < 50 ? 'מהיר' : 'מהיר מאוד'}
-                    </div>
+                    </span>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Desktop Font Size Control - Right side */}
-            {!isMobile && (
-              <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800 bg-opacity-95 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-gray-600">
-                <div className="flex flex-col items-center gap-6">
-                  <label className="text-lg font-bold text-gray-100">
-                    גודל גופן
-                  </label>
-                  <div className="relative">
+                  {/* Font Size Control */}
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-bold text-gray-100 min-w-16">
+                      גופן:
+                    </label>
                     <input
                       type="range"
                       min="2"
@@ -402,20 +389,12 @@ const App: React.FC = () => {
                       step="0.5"
                       value={fontSize}
                       onChange={(e) => adjustFontSize(parseFloat(e.target.value))}
-                      className="cursor-pointer w-40 h-2 accent-blue-500 transform -rotate-90"
-                      style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((fontSize - 2) / 10) * 100}%, #374151 ${((fontSize - 2) / 10) * 100}%, #374151 100%)`
-                      }}
+                      className="cursor-pointer w-32 accent-blue-500"
                       aria-label="שנה גודל גופן"
                     />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                    <span className="text-blue-400 font-bold text-sm bg-gray-700 px-2 py-1 rounded min-w-12 text-center">
                       {fontSize}rem
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {fontSize < 3 ? 'קטן' : fontSize < 6 ? 'בינוני' : fontSize < 9 ? 'גדול' : 'גדול מאוד'}
-                    </div>
+                    </span>
                   </div>
                 </div>
               </div>
