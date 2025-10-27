@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 
 interface TeleprompterProps {
   text: string;
+  fontSize: number;
+  speed: number;
 }
 
-const Teleprompter = ({ text }: TeleprompterProps) => {
-  const [fontSize, setFontSize] = useState(4);
+const Teleprompter = ({ text, fontSize, speed }: TeleprompterProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [showControls, setShowControls] = useState(true);
@@ -189,41 +189,6 @@ const Teleprompter = ({ text }: TeleprompterProps) => {
             </button>
           </div>
 
-          {/* Speed Control - סליידר */}
-          <div className={`flex items-center gap-3 sm:gap-4 ${isMobile ? 'w-full justify-center' : ''}`}>
-            <label htmlFor="speed-slider" className="text-sm sm:text-lg font-medium text-gray-200">
-              מהירות:
-            </label>
-            <input
-              id="speed-slider"
-              type="range"
-              min="0.1"
-              max="5"
-              step="0.1"
-              value={speed}
-              onChange={(e) => setSpeed(parseFloat(e.target.value))}
-              className={`cursor-pointer ${isMobile ? 'w-28' : 'w-52'} accent-green-500`}
-            />
-            <span className="text-white font-bold min-w-10 sm:min-w-14 text-center text-sm sm:text-base bg-gray-700 px-2 py-1 rounded">{speed.toFixed(1)}x</span>
-          </div>
-
-          {/* Font Size Control */}
-          <div className={`flex items-center gap-3 sm:gap-4 ${isMobile ? 'w-full justify-center' : ''}`}>
-            <label htmlFor="font-size-slider" className="text-sm sm:text-lg font-medium text-gray-200">
-              גופן:
-            </label>
-            <input
-              id="font-size-slider"
-              type="range"
-              min="2"
-              max={isMobile ? "8" : "12"}
-              step="0.5"
-              value={fontSize}
-              onChange={(e) => setFontSize(parseFloat(e.target.value))}
-              className={`cursor-pointer ${isMobile ? 'w-28' : 'w-52'} accent-blue-500`}
-            />
-            <span className="text-white font-bold min-w-10 sm:min-w-14 text-center text-sm sm:text-base bg-gray-700 px-2 py-1 rounded">{fontSize}rem</span>
-          </div>
 
           {/* Progress Bar */}
           <div className="w-full bg-gray-600 rounded-full h-2 sm:h-3 shadow-inner">
